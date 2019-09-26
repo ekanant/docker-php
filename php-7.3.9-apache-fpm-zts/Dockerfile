@@ -119,8 +119,8 @@ WORKDIR ${APACHE_HOME}/htdocs
 #Install oracle instantclient
 ENV ORACLE_INSTANTCLIENT_HOME=${LOCAL_D}/instantclient_19_3
 RUN cd ${LOCAL_D} \
-    && wget "https://download.oracle.com/otn_software/linux/instantclient/193000/instantclient-basic-linux.x64-19.3.0.0.0dbru.zip" \
-    && wget "https://download.oracle.com/otn_software/linux/instantclient/193000/instantclient-sdk-linux.x64-19.3.0.0.0dbru.zip" \
+    && wget "https://raw.githubusercontent.com/ekanant/oracle_instantclient/master/19.3.0.0.0/instantclient-basic-linux.x64-19.3.0.0.0dbru.zip" \
+    && wget "https://raw.githubusercontent.com/ekanant/oracle_instantclient/master/19.3.0.0.0/instantclient-sdk-linux.x64-19.3.0.0.0dbru.zip" \
     && unzip instantclient-basic-*.zip \
     && unzip instantclient-sdk-*.zip \
     && rm -rf instantclient-*.zip \ 
