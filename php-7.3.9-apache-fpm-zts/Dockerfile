@@ -103,8 +103,8 @@ RUN cd ${SRC_DIR} \
     && make install \
     && rm -rf ${SRC_DIR}/httpd* \
     && cd ${LOCAL_D}/bin \ 
-    && ln -sf /dev/stdout "${APACHE_HOME}/access_log" \
-    && ln -sf /dev/stderr "${APACHE_HOME}/error_log" \
+    && ln -sf /dev/stdout "${APACHE_HOME}/logs/access_log" \
+    && ln -sf /dev/stderr "${APACHE_HOME}/logs/error_log" \
     && ln -s "${APACHE_HOME}/bin/apachectl" /usr/local/bin/ \
     && ln -s "${APACHE_HOME}/bin/httpd" /usr/local/bin/ \
 # smoke test
