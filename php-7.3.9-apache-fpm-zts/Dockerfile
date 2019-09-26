@@ -20,7 +20,7 @@ RUN cd ${SRC_DIR} \
     && wget "https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3.tar.gz" \
     && tar -xzvf cmake-3.15.3.tar.gz \
     && cd cmake-3.15.3 \
-    && ./configure --prefix=${LOCAL_D}/cmake \
+    && ./configure --prefix="${LOCAL_D}/cmake" \
     && make -j${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/cmake-* \
@@ -31,7 +31,7 @@ RUN cd ${SRC_DIR} \
     && wget "https://www-us.apache.org/dist/apr/apr-1.7.0.tar.gz" \
     && tar -xzvf apr-1.7.0.tar.gz \
     && cd apr-1.7.0 \
-    && ./configure --prefix=${LOCAL_D}/apr \
+    && ./configure --prefix="${LOCAL_D}/apr" \
     && make -j${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/apr-1.7.0* \
@@ -44,7 +44,7 @@ RUN cd ${SRC_DIR} \
     && wget "http://www-eu.apache.org/dist/apr/apr-util-1.6.1.tar.gz" \
     && tar -xzvf apr-util-1.6.1.tar.gz \
     && cd apr-util-1.6.1 \
-    && ./configure --prefix=${LOCAL_D}/apr-util --with-apr=${LOCAL_D}/apr/bin/apr-1-config \
+    && ./configure --prefix="${LOCAL_D}/apr-util" --with-apr="${LOCAL_D}/apr/bin/apr-1-config" \
     && make -j${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/apr-util-1.6.1* \
@@ -56,7 +56,7 @@ RUN cd ${SRC_DIR} \
     && wget "https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz" \
     && tar -xzvf pcre-8.43.tar.gz \
     && cd pcre-8.43 \
-    && ./configure --prefix=${LOCAL_D}/pcre --with-apr=${LOCAL_D}/apr/bin/apr-1-config \
+    && ./configure --prefix="${LOCAL_D}/pcre" --with-apr="${LOCAL_D}/apr/bin/apr-1-config" \
     && make -j${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/pcre-8.43* \
@@ -68,7 +68,7 @@ RUN cd ${SRC_DIR} \
     && wget "https://github.com/nghttp2/nghttp2/releases/download/v1.39.2/nghttp2-1.39.2.tar.gz" \
     && tar -xzvf nghttp2-1.39.2.tar.gz \
     && cd nghttp2-1.39.2 \
-    && ./configure --prefix=${LOCAL_D}/nghttp2 \
+    && ./configure --prefix="${LOCAL_D}/nghttp2" \
     && make -j${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/nghttp2-1.39.2* \
@@ -80,7 +80,7 @@ RUN cd ${SRC_DIR} \
     && git clone https://github.com/google/brotli.git \
     && cd brotli/ \
     && mkdir out && cd out \
-    && ../configure-cmake --prefix=${LOCAL_D}/brotli \
+    && ../configure-cmake --prefix="${LOCAL_D}/brotli" \
     && make -j${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/brotli \
@@ -93,18 +93,20 @@ RUN cd ${SRC_DIR} \
     && wget "http://www.apache.org/dist/httpd/httpd-2.4.41.tar.gz" \
     && tar -xzvf httpd-2.4.41.tar.gz \
     && cd httpd-2.4.41 \
-    && ./configure --prefix=${APACHE_HOME} \
+    && ./configure --prefix="${APACHE_HOME}" \
         --enable-modules=all --enable-mods-shared=most --enable-mods-static=most --enable-so \
         --enable-deflate --enable-mime-magic --enable-expires --enable-session --enable-ssl \
         --enable-static-rotatelogs --enable-static-logresolve --enable-rewrite --enable-vhost-alias \
-        --with-apr=${LOCAL_D}/apr --with-apr-util=${LOCAL_D}/apr-util --with-pcre=${LOCAL_D}/pcre --enable-http2 \
-        --with-nghttp2=${LOCAL_D}/nghttp2 --enable-brotli --with-brotli=${LOCAL_D}/brotli \
+        --with-apr="${LOCAL_D}/apr" --with-apr-util="${LOCAL_D}/apr-util" --with-pcre="${LOCAL_D}/pcre" --enable-http2 \
+        --with-nghttp2="${LOCAL_D}/nghttp2" --enable-brotli --with-brotli="${LOCAL_D}/brotli" \
     && make -j${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/httpd* \
     && cd ${LOCAL_D}/bin \ 
-    && ln -s ${LOCAL_D}/apache2/bin/apachectl /usr/local/bin/ \
-    && ln -s ${LOCAL_D}/apache2/bin/httpd /usr/local/bin/ \
+    && ln -sf /dev/stdout "${APACHE_HOME}/access_log" \
+    && ln -sf /dev/stderr "${APACHE_HOME}/error_log" \
+    && ln -s "${APACHE_HOME}/bin/apachectl" /usr/local/bin/ \
+    && ln -s "${APACHE_HOME}/bin/httpd" /usr/local/bin/ \
 # smoke test
 	&& apachectl -v
 
