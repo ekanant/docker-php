@@ -144,7 +144,7 @@ RUN cd ${SRC_DIR} \
         --without-libzip --enable-zip \
         --enable-mbstring --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-soap --enable-simplexml --enable-session \
         --enable-xml --enable-wddx --enable-opcache --enable-json --enable-xmlreader --enable-xmlwriter --enable-maintainer-zts --enable-mysqlnd \
-        --with-mysqli=mysqlnd --with-pdo-mysql --with-pdo-mysql=mysqlnd --with-pdo-oci="instantclient,${ORACLE_INSTANTCLIENT_HOME},${ORACLE_INSTANTCLIENT_VERSION}" \
+        --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql --with-pdo-mysql=mysqlnd --with-pdo-oci="instantclient,${ORACLE_INSTANTCLIENT_HOME},${ORACLE_INSTANTCLIENT_VERSION}" \
         --with-oci8="instantclient,${ORACLE_INSTANTCLIENT_HOME},${ORACLE_INSTANTCLIENT_VERSION}" --enable-intl --with-apxs2="${LOCAL_D}/apache2/bin/apxs" --enable-exif \
         --with-tsrm-pthreads --with-openssl --enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --with-gd --enable-ctype \
         --with-jpeg-dir --with-png-dir --enable-gd-jis-conv --with-gettext --with-xmlrpc --enable-libgcc --with-libxml-dir --enable-bcmath \
