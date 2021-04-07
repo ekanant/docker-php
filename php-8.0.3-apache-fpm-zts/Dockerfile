@@ -226,8 +226,8 @@ RUN cd ${SRC_DIR} \
     && echo "opcache.jit=1255" >> ${PHP_CONF_D}/opcache.ini \
     # End, Opcache, jit config
     && echo "short_open_tag=On" > ${PHP_CONF_D}/php.custom.ini \
-    && echo "display_errors=Off" >> ${PHP_CONF_D}/php.custom.ini \
-    && echo "display_startup_errors=Off" >> ${PHP_CONF_D}/php.custom.ini \
+    && echo "display_errors=On" >> ${PHP_CONF_D}/php.custom.ini \
+    && echo "display_startup_errors=On" >> ${PHP_CONF_D}/php.custom.ini \
 	&& php -v
 
 #mongo client
