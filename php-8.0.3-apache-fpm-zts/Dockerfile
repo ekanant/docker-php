@@ -4,7 +4,9 @@
 #
 FROM centos:centos7.9.2009
 
-ENV PHPIZE_DEPS="libmcrypt-devel libicu-devel bzip2-devel curl-devel libxml2-devel bison-devel libzip-devel libaio-devel openssl-devel zlib-devel libpng-devel libjpeg-devel"
+ENV PHPIZE_DEPS="libmcrypt-devel libicu-devel bzip2-devel curl-devel \
+    libxml2-devel bison-devel libzip-devel libaio-devel openssl-devel \
+    zlib-devel libpng-devel libjpeg-devel libwebp-devel freetype-devel"
 ENV N_PROC=12
 
 RUN yum groupinstall -y "Development tools" \
@@ -128,14 +130,14 @@ EXPOSE 80 443 9000
 WORKDIR ${APACHE_HOME}/htdocs
 
 #Install oracle instantclient
-ENV ORACLE_INSTANTCLIENT_HOME=${LOCAL_D}/instantclient_19_3
+ENV ORACLE_INSTANTCLIENT_HOME=${LOCAL_D}/instantclient_21_1
 RUN cd ${LOCAL_D} \
-    && wget "https://raw.githubusercontent.com/ekanant/oracle_instantclient/master/19.3.0.0.0/instantclient-basic-linux.x64-19.3.0.0.0dbru.zip" \
-    && wget "https://raw.githubusercontent.com/ekanant/oracle_instantclient/master/19.3.0.0.0/instantclient-sdk-linux.x64-19.3.0.0.0dbru.zip" \
+    && wget "https://github.com/ekanant/oracle_instantclient/raw/master/21.1.0.0.0/instantclient-basic-linux.x64-21.1.0.0.0.zip" \
+    && wget "https://github.com/ekanant/oracle_instantclient/raw/master/21.1.0.0.0/instantclient-sdk-linux.x64-21.1.0.0.0.zip" \
     && unzip instantclient-basic-*.zip \
     && unzip instantclient-sdk-*.zip \
     && rm -rf instantclient-*.zip \ 
-    && echo "${ORACLE_INSTANTCLIENT_HOME}" > ${LD_CONF_D}/oracle_instantclient.conf \
+    && echo "${ORACLE_INSTANTCLIENT_HOME}" > "${LD_CONF_D}/oracle_instantclient.conf" \
     && ldconfig
 
 #Install libzip
@@ -151,30 +153,6 @@ RUN cd ${SRC_DIR} \
     && echo "${LOCAL_D}/libzip/lib64" > ${LD_CONF_D}/libzip.conf \
     && ldconfig \
     && rm -rf ${SRC_DIR}/libzip*
-
-#Install sqlite for php 8.0.3
-RUN cd ${SRC_DIR} \
-    && wget "https://www.sqlite.org/2021/sqlite-autoconf-3350400.tar.gz" \
-    && tar -xzvf sqlite-autoconf-3350400.tar.gz \
-    && cd sqlite-autoconf-3350400 \
-    && ./configure --prefix="${LOCAL_D}/sqlite" \
-    && make \
-    && make install \
-    && echo "${LOCAL_D}/sqlite/lib" > ${LD_CONF_D}/sqlite.conf \
-    && ldconfig \
-    && rm -rf ${SRC_DIR}/sqlite* 
-
-#Install lib icu
-RUN cd ${SRC_DIR} \
-    && wget "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-src.tgz" \
-    && tar -xzvf icu4c-64_2-src.tgz \
-    && cd icu/source \
-    && ./configure --prefix="${LOCAL_D}/icu" \
-    && make -j${N_PROC} \
-    && make install \
-    && echo "${LOCAL_D}/icu/lib" > ${LD_CONF_D}/icu.conf \
-    && ldconfig \
-    && rm -rf ${SRC_DIR}/icu*
 
 #Install onigiguruma for php 8.0.3
 RUN cd ${SRC_DIR} \
@@ -199,15 +177,15 @@ RUN cd ${SRC_DIR} \
     && tar -xzvf php-${PHP_VERSION}.tar.gz \
     && cd php-${PHP_VERSION} \
     &&  ./configure --prefix="${LOCAL_D}/php" --enable-calendar --with-bz2 --with-zlib --with-curl \
-        --with-libzip="${LOCAL_D}/libzip" --enable-zip \
+        --with-zip --enable-soap --enable-sockets --with-expat --without-sqlite3 --without-pdo-sqlite \
         --enable-mbstring --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-soap --enable-simplexml --enable-session \
-        --enable-xml --enable-wddx --enable-opcache --enable-json --enable-xmlreader --enable-xmlwriter --enable-maintainer-zts --enable-mysqlnd \
+        --enable-xml --enable-opcache --enable-xmlreader --enable-xmlwriter --enable-zts --enable-mysqlnd \
         --with-mysqli=mysqlnd --with-pdo-mysql --with-pdo-mysql=mysqlnd --with-pdo-oci="instantclient,${ORACLE_INSTANTCLIENT_HOME}" \
         --with-oci8="instantclient,${ORACLE_INSTANTCLIENT_HOME}" --enable-intl --with-apxs2="${LOCAL_D}/apache2/bin/apxs" --enable-exif \
-        --with-tsrm-pthreads --with-openssl --enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --with-gd --enable-ctype \
-        --with-jpeg-dir --with-png-dir --enable-gd-jis-conv --with-gettext --with-xmlrpc --enable-libgcc --with-libxml-dir --enable-bcmath \
-        --with-icu-dir="${LOCAL_D}/icu" --with-config-file-scan-dir="${PHP_CONF_D}" \
-        "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:${LOCAL_D}/sqlite/lib/pkgconfig/:${LOCAL_D}/oniguruma/lib/pkgconfig/" \
+        --with-openssl --enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --enable-gd --enable-ctype \
+        --with-jpeg --with-webp --with-freetype --enable-gd-jis-conv --with-gettext --enable-libgcc --enable-bcmath \
+        --enable-intl --with-config-file-scan-dir="${PHP_CONF_D}" \
+        "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:${LOCAL_D}/libzip/lib64/pkgconfig/:${LOCAL_D}/oniguruma/lib/pkgconfig/" \
     && make -j ${N_PROC} \
     && make install \
     && cp php.ini-production ${PHP_INI_DIR}/php.ini \
@@ -237,7 +215,7 @@ RUN cd ${SRC_DIR} \
     && git checkout 1.9.0 \
     && git submodule update --init \
     && phpize  \
-    && ./configure --prefix="${LOCAL_D}/mongo-php-driver" \
+    && ./configure \
     && make -j ${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/mongo-php-driver \
