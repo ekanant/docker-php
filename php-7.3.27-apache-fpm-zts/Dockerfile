@@ -130,14 +130,14 @@ EXPOSE 80 443 9000
 WORKDIR ${APACHE_HOME}/htdocs
 
 #Install oracle instantclient
-ENV ORACLE_INSTANTCLIENT_HOME=${LOCAL_D}/instantclient_19_3
+ENV ORACLE_INSTANTCLIENT_HOME=${LOCAL_D}/instantclient_21_1
 RUN cd ${LOCAL_D} \
-    && wget "https://raw.githubusercontent.com/ekanant/oracle_instantclient/master/19.3.0.0.0/instantclient-basic-linux.x64-19.3.0.0.0dbru.zip" \
-    && wget "https://raw.githubusercontent.com/ekanant/oracle_instantclient/master/19.3.0.0.0/instantclient-sdk-linux.x64-19.3.0.0.0dbru.zip" \
+    && wget "https://github.com/ekanant/oracle_instantclient/raw/master/21.1.0.0.0/instantclient-basic-linux.x64-21.1.0.0.0.zip" \
+    && wget "https://github.com/ekanant/oracle_instantclient/raw/master/21.1.0.0.0/instantclient-sdk-linux.x64-21.1.0.0.0.zip" \
     && unzip instantclient-basic-*.zip \
     && unzip instantclient-sdk-*.zip \
     && rm -rf instantclient-*.zip \ 
-    && echo "${ORACLE_INSTANTCLIENT_HOME}" > ${LD_CONF_D}/oracle_instantclient.conf \
+    && echo "${ORACLE_INSTANTCLIENT_HOME}" > "${LD_CONF_D}/oracle_instantclient.conf" \
     && ldconfig
 
 #Install lib icu
@@ -153,19 +153,19 @@ RUN cd ${SRC_DIR} \
     && cd ${SRC_DIR} \
     && rm -rf icu*
 
+#Install libzip
 RUN cd ${SRC_DIR} \
-    && wget "https://github.com/nih-at/libzip/archive/rel-1-4-0.tar.gz" \
-    && tar -xzvf rel-1-4-0.tar.gz \
-    && cd libzip-rel-1-4-0 \
+    && wget "https://github.com/nih-at/libzip/releases/download/v1.7.2/libzip-1.7.2.tar.gz" \
+    && tar -xzvf libzip-1.7.2.tar.gz \
+    && cd libzip-1.7.2 \
     && mkdir out \
     && cd out \
     && cmake -DCMAKE_INSTALL_PREFIX:PATH=${LOCAL_D}/libzip ../ \
-    && make -j${N_PROC} \
+    && make \
     && make install \
     && echo "${LOCAL_D}/libzip/lib" > ${LD_CONF_D}/libzip.conf \
-    && cd ${SRC_DIR} \
-    && rm -rf *.tar.gz \
-    && rm -rf libzip*
+    && ldconfig \
+    && rm -rf ${SRC_DIR}/libzip*
 
 #Install php
 ENV PHP_HOME=${LOCAL_D}/php
