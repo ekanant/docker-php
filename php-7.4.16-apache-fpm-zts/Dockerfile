@@ -249,7 +249,7 @@ RUN cd ${SRC_DIR} \
     && tar -xzvf 5.0.0.tar.gz  \
     && cd php-rdkafka-5.0.0 \
     && phpize \
-    && ./configure --prefix="${LOCAL_D}/php-rdkafka" --with-rdkafka=${LOCAL_D}/librdkafka \
+    && ./configure --with-rdkafka=${LOCAL_D}/librdkafka \
     && make all -j ${N_PROC} \
     && make install \
     && rm -rf ${SRC_DIR}/php-rdkafka* ${SRC_DIR}/*.tar.gz \
